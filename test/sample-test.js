@@ -17,3 +17,18 @@ describe("Greeter", function () {
     expect(await greeter.greet()).to.equal("Hola, mundo!");
   });
 });
+
+describe("AccountMng", function () {
+  it("Should return the new greeting once it's changed", async function () {
+    const AccountMng = await ethers.getContractFactory("AccountMng");
+    const accountMng = await AccountMng.deploy();
+    await accountMng.deployed();
+
+    await accountMng.registerAccount("Mike");
+    expect(await accountMng.getName()).to.equal("Mike");
+
+    await accountMng.setName("Manh");
+
+    expect(await accountMng.getName()).to.equal("Manh");
+  });
+});

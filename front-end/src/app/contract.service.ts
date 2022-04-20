@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import Web3 from "web3";
-
+import  greeter from "../contracts/Greeter.json" ;
+import accountMng from "../contracts/AccountMng.json";
 declare const window: any;
 
 
@@ -11,46 +12,6 @@ export class ContractService {
   window:any;
   public web3: any;
 
-  api = [
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_greeting",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
-      "inputs": [],
-      "name": "greet",
-      "outputs": [
-        {
-          "internalType": "string",
-          "name": "",
-          "type": "string"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "string",
-          "name": "_greeting",
-          "type": "string"
-        }
-      ],
-      "name": "setGreeting",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    }
-  ];
-
   constructor() { }
   private getAccounts = async () => {
     try {
@@ -60,11 +21,59 @@ export class ContractService {
     }
   }
 
+
+  public register = async (account: any) => {
+    try {
+      let contract = new window.web3.eth.Contract(
+        accountMng.artifact.abi,
+        accountMng.Token
+      );
+      await contract.methods.registerAccount( account.name).call();
+
+      return this.getName();
+    }
+    catch (error) {
+      const errorMessage = error.message;
+      console.log(errorMessage)
+
+    }
+  }
+
+  public getName = async () => {
+    try {
+      let contract = new window.web3.eth.Contract(
+        accountMng.artifact.abi,
+        accountMng.Token
+      );
+      return await contract.methods.getName().call();
+    }
+    catch (error) {
+      const errorMessage = error.message;
+      console.log(errorMessage)
+
+    }
+  }
+
+  public saveName = async (name: string) => {
+    try {
+      let contract = new window.web3.eth.Contract(
+        accountMng.artifact.abi,
+        accountMng.Token
+      );
+      console.log("save " + name)
+      return await contract.methods.setName(name).call();
+    }
+    catch (error) {
+      const errorMessage = error.message;
+      console.log(errorMessage)
+    }
+  }
+
   public sayGreeting = async (address: string) => {
     try {
       const contract = new window.web3.eth.Contract(
-        this.api,
-         "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9"
+        greeter.artifact.abi,
+        greeter.Token
       );
       const token = await contract.methods.greet().call();
       console.log("greet",token)
