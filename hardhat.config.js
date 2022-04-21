@@ -22,7 +22,15 @@ const Private_Key = "df57089febbacf7ba0bc227dafbffa9fc08a93fdc68e1e42411a14efcf2
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  solidity: "0.8.4",
+  solidity: {
+      version: "0.8.4",
+      settings: {
+          optimizer: {
+              enabled: true,
+              runs: 200
+          }
+      }
+  },
 
   networks: {
     ropsten: {

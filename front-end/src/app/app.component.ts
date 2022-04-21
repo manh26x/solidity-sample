@@ -32,23 +32,25 @@ export class AppComponent implements OnInit {
         debugger
         this.account.address = resp;
 
-      if(!this.account.name) {
+      if(!!this.account.name) {
         this.contractService.register(this.account).then(result => {
           this.account.name = result;
           this.getName();
         })
       }
-        this.contractService.getName().then(r => console.log(r));
+        this.contractService.getName(this.account).then(r => console.log(r));
 
       })
   }
 
   getName() {
-    this.contractService.getName().then(r => console.log(r));
+    this.contractService.getName(this.account).then(r => console.log(r));
   }
 
   saveName() {
-    this.contractService.saveName(this.account.name).then(result => this.getName());
+    this.contractService.register(this.account).then(result => {
+      console.log("registerd", result)
+    })
   }
 }
 

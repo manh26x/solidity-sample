@@ -6,7 +6,6 @@ describe("Greeter", function () {
     const Greeter = await ethers.getContractFactory("Greeter");
     const greeter = await Greeter.deploy("Hello, world!");
     await greeter.deployed();
-
     expect(await greeter.greet()).to.equal("Hello, world!");
 
     const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
@@ -23,12 +22,13 @@ describe("AccountMng", function () {
     const AccountMng = await ethers.getContractFactory("AccountMng");
     const accountMng = await AccountMng.deploy();
     await accountMng.deployed();
+      const [owner] = await ethers.getSigners();
 
-    await accountMng.registerAccount("Mike");
-    expect(await accountMng.getName()).to.equal("Mike");
-
-    await accountMng.setName("Manh");
-
-    expect(await accountMng.getName()).to.equal("Manh");
+    await accountMng.registerAccount(owner.address, "Mike");
+    expect(await accountMng.getName(owner.address)).to.equal("Mike");
+      console.log('name ' + await accountMng.getName(owner.address));
+    await accountMng.setName(owner.address,"Manh");
+    console.log('name ' + await accountMng.getName(owner.address));
+    expect(await accountMng.getName(owner.address)).to.equal("Manh");
   });
 });

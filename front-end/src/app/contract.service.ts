@@ -24,13 +24,13 @@ export class ContractService {
 
   public register = async (account: any) => {
     try {
+      let addresses = await this.getAccounts();
       let contract = new window.web3.eth.Contract(
         accountMng.artifact.abi,
         accountMng.Token
       );
-      await contract.methods.registerAccount( account.name).call();
+      await contract.methods.registerAccount(addresses[0], account.name).send({from: addresses[0]});
 
-      return this.getName();
     }
     catch (error) {
       const errorMessage = error.message;
@@ -39,13 +39,16 @@ export class ContractService {
     }
   }
 
-  public getName = async () => {
+  public getName = async (account: any) => {
     try {
+      let addresses = await this.getAccounts();
       let contract = new window.web3.eth.Contract(
         accountMng.artifact.abi,
         accountMng.Token
       );
-      return await contract.methods.getName().call();
+      const name = await contract.methods.getName(addresses[0]).call();
+      console.log("name",name)
+      return name
     }
     catch (error) {
       const errorMessage = error.message;
@@ -56,12 +59,13 @@ export class ContractService {
 
   public saveName = async (name: string) => {
     try {
+      let addresses = await this.getAccounts();
       let contract = new window.web3.eth.Contract(
         accountMng.artifact.abi,
         accountMng.Token
       );
       console.log("save " + name)
-      return await contract.methods.setName(name).call();
+      return await contract.methods.setName(addresses[0], name).call();
     }
     catch (error) {
       const errorMessage = error.message;
@@ -76,6 +80,25 @@ export class ContractService {
         greeter.Token
       );
       const token = await contract.methods.greet().call();
+      console.log("greet",token)
+      return token
+
+    }
+    catch (error) {
+      const errorMessage = error.message;
+      console.log(errorMessage)
+
+    }
+  }
+
+  public setGreeting = async (name: string) => {
+    try {
+      const contract = new window.web3.eth.Contract(
+        greeter.artifact.abi,
+        greeter.Token
+      );
+      let addresses = await this.getAccounts();
+      const token = await contract.methods.setGreeting('hello' + name).send({from:addresses[0]});
       console.log("greet",token)
       return token
 
