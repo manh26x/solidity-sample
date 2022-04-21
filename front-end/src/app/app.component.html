@@ -1,25 +1,104 @@
 <div class="flex justify-content-center h-screen align-items-center">
 <div  class="surface-card p-4 shadow-2 border-round w-full md:m-4 lg:w-5">
-  <div *ngIf="!account.address">
+  <form *ngIf="!account.address">
   <div class="text-center mb-5">
     <img src="/assets/images/blocks/logos/banking-cash-money-svgrepo-com.svg" alt="Image" height="200" class="mb-3">
     <div class="text-900 text-3xl font-medium mb-3">Welcome Back</div>
     <span class="text-600 font-medium line-height-3">Did you connect to wallet?</span>
     <div>
       <label for="name" class="block text-900 font-medium mb-2">Your Name</label>
-      <input id="name" type="text" pInputText class="w-full mb-3" [(ngModel)]="account.name">
+      <input id="name" type="text" pInputText class="w-full mb-3" [(ngModel)]="account.name" required>
     </div>
     <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Let's connect!</a>
   </div>
-    <button pButton pRipple label="Connect to Metamask" (click)="openMetaMask()" icon="pi pi-user" class="w-full"></button>
-  </div>
+    <button pButton type="submit" pRipple label="Connect to Metamask" (click)="openMetaMask()" icon="pi pi-user" class="w-full"></button>
+  </form>
   <div *ngIf="account.address">
-    <div>
-      <label  class="block text-900 font-medium mb-2">Your Name {{account.name}}</label>
-      <input type="text" pInputText class="w-full mb-3" [(ngModel)]="account.name">
+    <div class=" mb-2">
+      <div class="card text-center">
+        <p-avatar icon="pi pi-user" styleClass="mr-2" size="xlarge" [style]="{'background-color':'#2196F3', 'color': '#ffffff'}" shape="circle"></p-avatar>
+        <h2>{{account.name}}</h2>
+
+      </div>
+      <div class="surface-section">
+        <div class="font-medium text-3xl text-900 mb-3">Information</div>
+        <div class="text-500 mb-5">Have any happy in the life?</div>
+        <ul class="list-none p-0 m-0">
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Name</div>
+            <div *ngIf="!isEditName" class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{account.name}}</div>
+            <input  type="text" pInputText class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" [(ngModel)]="account.name" [hidden]="!isEditName">
+            <div class="w-6 md:w-2 flex justify-content-end">
+              <button *ngIf="!isEditName" pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text" (click)="isEditName = !isEditName"></button>
+              <button *ngIf="isEditName" pButton pRipple label="Save" icon="pi pi-save" class="p-button-text" (click)="setName()"></button>
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Balance</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              <p-chip label="{{account.balance}}" class="mr-2"></p-chip>
+            </div>
+            <div class="w-6 md:w-2 flex justify-content-end">
+<!--              <button pButton pRipple label="Edit" icon="pi pi-pencil" class="p-button-text"></button>-->
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Birthday</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              <p-calendar dateFormat="dd/mm/yy"  id="birthdayCalendar" [disabled]="!isEditBirthday" inputId="calendar" [(ngModel)]="account.birthdate" class="ng-invalid "
+                          [showIcon]="true" placeholder="Calendar">
+              </p-calendar>
+            </div>
+
+            <div class="w-6 md:w-2 flex justify-content-end">
+              <button *ngIf="!isEditBirthday" pButton pRipple label="Edit" icon="pi pi-pencil" (click)="isEditBirthday = !isEditBirthday" class="p-button-text"></button>
+              <button *ngIf="isEditBirthday" pButton pRipple label="Save" icon="pi pi-save" class="p-button-text" (click)="setBirthdate()"></button>
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Description</div>
+            <div *ngIf="!isEditDescription" class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{account.description}}</div>
+            <input  type="text" pInputText class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1" [(ngModel)]="account.description" [hidden]="!isEditDescription">
+            <div class="w-6 md:w-2 flex justify-content-end">
+              <button *ngIf="!isEditDescription" pButton pRipple label="Edit" icon="pi pi-pencil" (click)="isEditDescription = !isEditDescription" class="p-button-text"></button>
+              <button *ngIf="isEditDescription" pButton pRipple label="Save" icon="pi pi-save" class="p-button-text" (click)="setDescription()"></button>
+            </div>
+          </li>
+        </ul>
+      </div>
+
     </div>
-    <button pButton pRipple label="Save" (click)="saveName()" icon="pi pi-user" class="w-full"></button>
-    <button pButton pRipple label="Get Name" (click)="getName()" icon="pi pi-user" class="w-full"></button>
+    <button pButton pRipple label="Show all Transaction" (click)="getAllTransaction(); isShowTransaction= true" icon="pi pi-search" class="w-full"></button>
+
   </div>
 </div>
+
 </div>
+<p-dialog header="Transaction of your account" [(visible)]="isShowTransaction">
+  <p-card  >
+    <p-table [value]="transaction" responsiveLayout="scroll">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Type</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Value</th>
+          <th>Gas Price</th>
+          <th>Balance</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-tran>
+        <tr>
+          <td>{{tran.type}}</td>
+          <td>{{tran.from}}</td>
+          <td>{{tran.to}}</td>
+          <td>{{tran.value}}</td>
+          <td>{{tran.gasPrice}}</td>
+          <td>{{tran.bal}}</td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  </p-card>
+
+</p-dialog>

@@ -4,3 +4,9 @@
 .mybutton {
   @include styleclass('bg-blue-500 text-white hover:bg-blue-600 border-round transition-colors transition-duration-150 p-3 border-none');
 }
+body{
+  font-family: Roboto, serif;
+}
+#birthdayCalendar .p-calendar {
+  min-width: 100% !important;
+}

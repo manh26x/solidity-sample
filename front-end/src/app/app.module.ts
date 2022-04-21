@@ -9,6 +9,12 @@ import {ButtonModule} from "primeng/button";
 import {RippleModule} from "primeng/ripple";
 import {InputTextModule} from "primeng/inputtext";
 import {FormsModule} from "@angular/forms";
+import {AvatarModule} from "primeng/avatar";
+import {ChipModule} from "primeng/chip";
+import {CalendarModule} from "primeng/calendar";
+import {TableModule} from "primeng/table";
+import {CardModule} from "primeng/card";
+import {DialogModule} from "primeng/dialog";
 
 @NgModule({
   declarations: [
@@ -22,6 +28,12 @@ import {FormsModule} from "@angular/forms";
     RippleModule,
     InputTextModule,
     FormsModule,
+    AvatarModule,
+    ChipModule,
+    CalendarModule,
+    TableModule,
+    CardModule,
+    DialogModule,
   ],
   providers: [ContractService],
   bootstrap: [AppComponent]

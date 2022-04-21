@@ -12,7 +12,8 @@ export class ContractService {
   window:any;
   public web3: any;
 
-  constructor() { }
+  constructor() {
+  }
   private getAccounts = async () => {
     try {
       return await window.ethereum.request({ method: 'eth_accounts' });
@@ -21,51 +22,152 @@ export class ContractService {
     }
   }
 
+  public checkAccountExist = async () => {
+    const address = await this.openMetamask();
+    if(address === false) {
+      return false;
+    } else {
+      let contract = new window.web3.eth.Contract(
+        accountMng.artifact.abi,
+        accountMng.Token
+      );
+      return contract.methods.checkAccountExist().call();
+    }
+  }
+
+  public getAllTransaction = async () => {
+    const web3 =  window.web3;
+    let addresses = await this.getAccounts();
+    var currentBlock  = await web3.eth.getBlockNumber((error: any, result: any) =>{
+      if (!error)
+        console.log("block number => " +result)
+    });
+    let n = await web3.eth.getTransactionCount(addresses[0], currentBlock);
+    var bal : number = + await web3.eth.getBalance(addresses[0]);
+    let result: any[] = [];
+    for (var i=currentBlock; i >= 0 && (n > 0 || bal > 0); --i) {
+      try {
+        var block = await web3.eth.getBlock(i, true);
+        if (block && block.transactions) {
+          block.transactions.forEach((e:any) => {
+
+            if (e.from && addresses[0].toString().toLowerCase() == e.from.toString().toLowerCase()) {
+              let value: number = +e.value;
+              let gasPrice: number = +e.gasPrice
+                bal += value + gasPrice;
+
+              result.push({
+                type: '-',
+                from: 'You',
+                to: e.to,
+                value: web3.utils.fromWei(e.value, "ether"),
+                gasPrice: web3.utils.fromWei(e.gasPrice, "ether"),
+                bal : web3.utils.fromWei(bal.toLocaleString('fullwide', {useGrouping:false}), "ether")
+              })
+              --n;
+            }
+            if (e.to && addresses[0].toString().toLowerCase() == e.to.toString().toLowerCase()) {
+              let value: number = +e.value;
+                bal -= value;
+              result.push({
+                type: '+',
+                from: e.from,
+                to: 'You',
+                value: web3.utils.fromWei(e.value, "ether"),
+                gasPrice: web3.utils.fromWei(e.gasPrice, "ether"),
+                bal : web3.utils.fromWei(bal.toLocaleString('fullwide', {useGrouping:false}), "ether")
+              })
+
+            }
+          });
+        }
+      } catch (e) { console.error("Error in block " + i, e); }
+    }
+    return result;
+
+  }
 
   public register = async (account: any) => {
-    try {
+      debugger
       let addresses = await this.getAccounts();
       let contract = new window.web3.eth.Contract(
         accountMng.artifact.abi,
         accountMng.Token
       );
-      await contract.methods.registerAccount(addresses[0], account.name).send({from: addresses[0]});
+      return await contract.methods.registerAccount(addresses[0], account.name).send({from: addresses[0]});
 
-    }
-    catch (error) {
-      const errorMessage = error.message;
-      console.log(errorMessage)
 
-    }
+  }
+
+  public getBalance = async () => {
+    const web3 =  window.web3;
+    const addresses = await this.getAccounts();
+    return web3.utils.fromWei(await web3.eth.getBalance(addresses[0]), "ether");
   }
 
   public getName = async (account: any) => {
-    try {
       let addresses = await this.getAccounts();
       let contract = new window.web3.eth.Contract(
         accountMng.artifact.abi,
         accountMng.Token
       );
+      account.address=addresses[0];
       const name = await contract.methods.getName(addresses[0]).call();
       console.log("name",name)
       return name
-    }
-    catch (error) {
-      const errorMessage = error.message;
-      console.log(errorMessage)
+  }
 
-    }
+  public getBirthdate = async () => {
+      let addresses = await this.getAccounts();
+      let contract = new window.web3.eth.Contract(
+        accountMng.artifact.abi,
+        accountMng.Token
+      );
+      const date = await contract.methods.getBirthdate().call({from: addresses[0]});
+
+      return new Date(date*1000)
+
+  }
+
+  public getDescription = async () => {
+    let addresses = await this.getAccounts();
+      let contract = new window.web3.eth.Contract(
+        accountMng.artifact.abi,
+        accountMng.Token
+      );
+      return await contract.methods.getDescription().call({from:addresses[0]});
+
+  }
+
+  public setDescription = async (description: string) => {
+    let addresses = await this.getAccounts();
+    let contract = new window.web3.eth.Contract(
+      accountMng.artifact.abi,
+      accountMng.Token
+    );
+    return await contract.methods.setDescription(description).send({from: addresses[0]});
+
   }
 
   public saveName = async (name: string) => {
-    try {
       let addresses = await this.getAccounts();
       let contract = new window.web3.eth.Contract(
         accountMng.artifact.abi,
         accountMng.Token
       );
       console.log("save " + name)
-      return await contract.methods.setName(addresses[0], name).call();
+      return await contract.methods.setName(addresses[0], name).send({from: addresses[0]});
+  }
+
+  public saveBirthdate = async (birthday: Date) => {
+    try {
+      let addresses = await this.getAccounts();
+      let contract = new window.web3.eth.Contract(
+        accountMng.artifact.abi,
+        accountMng.Token
+      );
+      const birthdayTime = birthday.getTime()/1000;
+      return await contract.methods.setBirthdate(birthdayTime).send({from: addresses[0]});
     }
     catch (error) {
       const errorMessage = error.message;
